@@ -1,7 +1,7 @@
-"""Public contracts. UI and workflows depend on these types, not provider payloads."""
+﻿"""Public contracts. UI and workflows depend on these types, not provider payloads."""
 from enum import StrEnum
 from typing import Literal
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, model_validator, computed_field
 
 
 class SourceKind(StrEnum):
@@ -97,3 +97,33 @@ class ScreeningResult(BaseModel):
         if self.status != "completed" and self.assessment is not None and self.assessment.match_score is not None:
             raise ValueError("Unfinished screening cannot expose a score.")
         return self
+
+    @computed_field
+    @property
+    def review_category(self) -> str:
+        if self.status != "completed" or self.assessment is None:
+            return "Needs Human Review"
+
+        score = self.assessment.match_score
+        if score is None or self.job is None:
+            return "Needs Human Review"
+
+        from talentflow.candidates.scoring import (
+            EvidenceMappingError,
+            has_unverified_required_criteria,
+        )
+
+        try:
+            if has_unverified_required_criteria(self.job, self.assessment):
+                return "Needs Human Review"
+        except EvidenceMappingError:
+            return "Needs Human Review"
+
+        if score >= 85:
+            return "Strong Match"
+        if score >= 70:
+            return "Potential Match"
+        if score >= 50:
+            return "Needs Human Review"
+        return "Weak Match"
+

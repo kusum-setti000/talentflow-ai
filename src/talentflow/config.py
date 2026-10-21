@@ -1,10 +1,26 @@
 from functools import lru_cache
 from pydantic import Field, SecretStr
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, SettingsConfigDict, PydanticBaseSettingsSource
 
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    @classmethod
+    def settings_customise_sources(
+        cls,
+        settings_cls,
+        init_settings,
+        env_settings,
+        dotenv_settings,
+        file_secret_settings,
+    ) -> tuple[PydanticBaseSettingsSource, ...]:
+        return (
+            init_settings,
+            dotenv_settings,
+            env_settings,
+            file_secret_settings,
+        )
+
     openai_api_key: SecretStr | None = None
     openai_model: str = "gpt-4.1-mini"
     openai_timeout: int = Field(default=45, ge=5, le=180)

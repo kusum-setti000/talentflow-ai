@@ -1,0 +1,27 @@
+@media (max-width: 768px) {
+    .block-container {
+        padding: 1rem 0.8rem 2rem;
+    }
+
+    .tf-hero {
+        padding: 22px;
+        border-radius: 16px;
+    }
+
+    .tf-hero h1 {
+        font-size: 1.8rem;
+    }
+
+    [data-testid="stHorizontalBlock"] {
+        flex-wrap: wrap;
+    }
+
+    [data-testid="column"] {
+        min-width: min(100%, 280px);
+        flex: 1 1 100%;
+    }
+
+    .stButton button {
+        min-height: 44px;
+    }
+}
