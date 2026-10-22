@@ -114,6 +114,16 @@ class CandidateAssessor:
             "job": job.model_dump_json(),
             "resume": resume
         })
+        print("\n=== RAW LLM EVIDENCE ===", flush=True)
+        for item in assessment.evidence:
+            print(
+                "REQUIREMENT:", item.requirement,
+                "| STATUS:", item.status,
+                "| EVIDENCE:", item.resume_evidence,
+                flush=True
+            )
+        print("=== END RAW LLM EVIDENCE ===\n", flush=True)
+
         if assessment.status == "completed":
             try:
                 # Score only required qualifications. Preferred qualifications
